@@ -19,43 +19,18 @@ import br.com.david.forum.repository.UsuarioRepository;
 
 @Configuration
 @EnableWebSecurity
-@Profile("prod")
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
+@Profile("dev")
+public class DevSecurityConfiguration extends WebSecurityConfigurerAdapter{
 	
-	@Autowired
-	private AutenticacaoService autenticacaoService;
-	
-	@Autowired
-	private TokenService tokenService;
-	
-	@Autowired
-	private UsuarioRepository usuarioRepository;
-	
-	@Override
-	@Bean
-	protected AuthenticationManager authenticationManager() throws Exception {
-		return super.authenticationManager();
-	}
-	
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		//super.configure(auth);
-		auth.userDetailsService(autenticacaoService).passwordEncoder(new BCryptPasswordEncoder());
-	}
+
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		//super.configure(http);
 		http.authorizeRequests()
-		.antMatchers(HttpMethod.POST, "/auth").permitAll()
-		.antMatchers(HttpMethod.GET, "/topicos").permitAll()
-		.antMatchers(HttpMethod.GET, "/actuator/**").permitAll()
-		.antMatchers(HttpMethod.DELETE, "/topicos/*").hasAnyRole("MODERADOR")
-		.anyRequest().authenticated()
-		.and().csrf().disable()
-		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-		.and().addFilterBefore(new AutenticacaoViaTokenFilter(tokenService, usuarioRepository), UsernamePasswordAuthenticationFilter.class);
-	}
+		.antMatchers("/**/").permitAll()
+		.and().csrf().disable();
+		}
 	
 	@Override
 	public void configure(WebSecurity web) throws Exception {
